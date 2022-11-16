@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace FightSpade
 {
-    [BepInPlugin("com.kuborro.plugins.fp2.fightspade", "FightSpade", "1.0.0")]
+    [BepInPlugin("com.kuborro.plugins.fp2.fightspade", "FightSpade", "1.0.1")]
     [BepInProcess("FP2.exe")]
     public class Plugin : BaseUnityPlugin
     {

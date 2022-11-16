@@ -33,6 +33,9 @@ namespace FightSpade
         }
     }
 
+    //We load our assets, as well as create a new "challenge" in the ArenaSpawner
+    //I have decided to go with this method instead of simple replacement as it helps with understanding the creation of fully custom challenges and fights.
+
     class PatchBossFight
     {
         [HarmonyPrefix]
@@ -86,18 +89,21 @@ namespace FightSpade
             }
         }
     }
-
+    //Fix for spawning behavior
     class PatchBossSpade
     {
         [HarmonyPostfix]
         [HarmonyPatch(typeof(PlayerBossSpade), "Start", MethodType.Normal)]
         static void Postfix(PlayerBossSpade __instance, ref Vector2 ___start)
         {
-            __instance.position = new Vector2(486, -336);
+            __instance.position = new Vector2(486, -336); //Both position and start location have to be corrected here, due to assets being loaded from external bundle
             ___start = new Vector2(486, -336);
-            __instance.genericTimer = -30f;
+            __instance.genericTimer = -30f; //Spade's code lacks this line compared to other PlayerBosses - setting this prevents him from instantly shooting you at the start of the fight
         }
     }
+
+    //Black magic to fix outdated code in the game's files. Spade lacks a check if FPStage's timeEnabled bool is true, making him attack you before round starts (unlike other PlayerBoss instances)
+    //This fixes it by simulating that functionality
     class PatchBossSpadeRunning
     {
         [HarmonyPrefix]
@@ -106,39 +112,41 @@ namespace FightSpade
         {
             if (!Plugin.FightStarted)
             {
-                Plugin.FightStarted = FPStage.timeEnabled;
+                Plugin.FightStarted = FPStage.timeEnabled; //Global variable is used so we can easily edit it from other patches
             }
             __instance.targetToPursue = FPStage.FindNearestPlayer(__instance, 640f);
             return Plugin.FightStarted;
         }
     }
+    //Needed to make him actually target you, the base code doesnt do it by itself
     class PatchBossSpadeCardThrow
     {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(PlayerBossSpade), "State_ThrowCards", MethodType.Normal)]
         static void Prefix(PlayerBossSpade __instance)
         {
-            __instance.Action_FacePlayer();
+            __instance.Action_FacePlayer(); 
         }
     }
 
-
+    //Patch to replace Askal with Spade in Shang Mu Dojo
     class PatchBossList
     {
         [HarmonyPostfix]
         [HarmonyPatch(typeof(MenuArenaBossSelect), "Start", MethodType.Normal)]
         static void Postfix(MenuArenaBossSelect __instance)
         {
-            SpriteRenderer[] components = __instance.GetComponentsInChildren<SpriteRenderer>();
+            if (FPStage.stageNameString == "Royal Palace") { //Make sure we dont edit the BattleSphere
+                SpriteRenderer[] components = __instance.GetComponentsInChildren<SpriteRenderer>();
 
-            foreach (SpriteRenderer component in components)
-            {
-                if (component.sprite.name == "arena_bosses_6")
+                foreach (SpriteRenderer component in components)
                 {
-                    component.sprite = Plugin.moddedBundle.LoadAsset<Sprite>("spade_portrait");
+                    if (component.sprite.name == "arena_bosses_6")
+                    {
+                        component.sprite = Plugin.moddedBundle.LoadAsset<Sprite>("spade_portrait");
+                    }
                 }
             }
-
         }
     }
 
@@ -148,9 +156,9 @@ namespace FightSpade
         [HarmonyPatch(typeof(MenuText), "Start", MethodType.Normal)]
         static void Postfix(ref string[] ___paragraph, MenuText __instance)
         {
-            if (___paragraph != null && FPStage.stageNameString == "Royal Palace" && __instance.name == "Name")
+            if (___paragraph != null && FPStage.stageNameString == "Royal Palace" && __instance.name == "Name") //Same deal as above, we also check if its the MenuText we want
             {
-                if (___paragraph.Length > 2)
+                if (___paragraph.Length > 2) //One other MenuText matches, but it has lenght of 1. We make sure we arent trying to manipulate that one
                 ___paragraph[Array.IndexOf(___paragraph, "Askal")] = "Spade";
             }
 

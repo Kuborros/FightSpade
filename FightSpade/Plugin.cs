@@ -12,6 +12,7 @@ namespace FightSpade
     {
         public static AssetBundle moddedBundle;
         public static GameObject spadeObject;
+        public static bool FightStarted = false;
         private void Awake()
         {
             string assetPath = Path.Combine(Path.GetFullPath("."), "mod_overrides");
@@ -53,6 +54,7 @@ namespace FightSpade
                 if (Plugin.spadeObject != null && (FPSaveManager.currentArenaChallenge == 5 || FPSaveManager.currentArenaChallenge == 6))
                 {
                     __instance.syncChallengeID = false;
+                    Plugin.FightStarted = false;
 
                     ArenaRoundSpawnList spadeList = new()
                     {
@@ -80,7 +82,6 @@ namespace FightSpade
                     __instance.challenges = __instance.challenges.AddToArray(spawnList);
                     __instance.currentChallenge = 6;
                     FPSaveManager.currentArenaChallenge = 6;
-                    Plugin.spadeObject.GetComponent<PlayerBossSpade>().position = new Vector2(-486, 336);
                 }
             }
         }
@@ -103,8 +104,12 @@ namespace FightSpade
         [HarmonyPatch(typeof(PlayerBossSpade), "State_Running", MethodType.Normal)]
         static bool Prefix(PlayerBossSpade __instance)
         {
+            if (!Plugin.FightStarted)
+            {
+                Plugin.FightStarted = FPStage.timeEnabled;
+            }
             __instance.targetToPursue = FPStage.FindNearestPlayer(__instance, 640f);
-            return FPStage.timeEnabled;
+            return Plugin.FightStarted;
         }
     }
     class PatchBossSpadeCardThrow
@@ -113,10 +118,7 @@ namespace FightSpade
         [HarmonyPatch(typeof(PlayerBossSpade), "State_ThrowCards", MethodType.Normal)]
         static void Prefix(PlayerBossSpade __instance)
         {
-            if (FPStage.timeEnabled && __instance.state != new FPObjectState(__instance.State_KO))
-            {
-                __instance.Action_FacePlayer();
-            }
+            __instance.Action_FacePlayer();
         }
     }
 

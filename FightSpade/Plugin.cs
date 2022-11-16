@@ -148,6 +148,7 @@ namespace FightSpade
         {
             if (___paragraph != null && FPStage.stageNameString == "Royal Palace" && __instance.name == "Name")
             {
+                if (___paragraph.Length > 2)
                 ___paragraph[Array.IndexOf(___paragraph, "Askal")] = "Spade";
             }
 

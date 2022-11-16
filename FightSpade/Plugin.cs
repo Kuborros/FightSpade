@@ -3,7 +3,6 @@ using HarmonyLib;
 using System;
 using System.IO;
 using UnityEngine;
-using static UnityEngine.Random;
 
 namespace FightSpade
 {
@@ -29,6 +28,7 @@ namespace FightSpade
             harmony.PatchAll(typeof(PatchBossSpadeRunning));
             harmony.PatchAll(typeof(PatchBossSpadeCardThrow));
             harmony.PatchAll(typeof(PatchBossList));
+            harmony.PatchAll(typeof(PatchBossNames));
         }
     }
 
@@ -54,13 +54,13 @@ namespace FightSpade
                 {
                     __instance.syncChallengeID = false;
 
-                    ArenaRoundSpawnList spadeList = new ArenaRoundSpawnList
+                    ArenaRoundSpawnList spadeList = new()
                     {
                         bossBattle = true,
                         waitForObjectDestruction = false,
                         objectList = new FPBaseObject[] { Plugin.spadeObject.GetComponent<PlayerBossSpade>() }
                     };
-                    ArenaSpawnList spawnList = new ArenaSpawnList
+                    ArenaSpawnList spawnList = new()
                     {
                         name = "SpadeBoss",
                         challengeID = 36,

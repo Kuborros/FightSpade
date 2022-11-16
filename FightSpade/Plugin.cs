@@ -40,7 +40,7 @@ namespace FightSpade
         {
             if (FPStage.stageNameString == "Training" && Plugin.spadeObject == null)
             {
-                Object[] modKuboPre = Plugin.moddedBundle.LoadAllAssets();
+                UnityEngine.Object[] modKuboPre = Plugin.moddedBundle.LoadAllAssets();
                 foreach (var mod in modKuboPre)
                 {
                     if (mod.GetType() == typeof(GameObject))

@@ -42,6 +42,7 @@ namespace FightSpade
         [HarmonyPatch(typeof(ArenaSpawner), "Start", MethodType.Normal)]
         static void Prefix(ArenaSpawner __instance)
         {
+            if (FPStage.stageNameString == "Training" && (FPSaveManager.currentArenaChallenge == 5 || FPSaveManager.currentArenaChallenge == 6)) FPAudio.StopMusic();
             if (FPStage.stageNameString == "Training" && Plugin.spadeObject == null)
             {
                 UnityEngine.Object[] modKuboPre = Plugin.moddedBundle.LoadAllAssets();

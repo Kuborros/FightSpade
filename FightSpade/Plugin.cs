@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace FightSpade
 {
-    [BepInPlugin("com.kuborro.plugins.fp2.fightspade", "FightSpade", "1.0.1")]
+    [BepInPlugin("com.kuborro.plugins.fp2.fightspade", "FightSpade", "1.1.0")]
     [BepInProcess("FP2.exe")]
     public class Plugin : BaseUnityPlugin
     {
@@ -42,7 +42,7 @@ namespace FightSpade
         [HarmonyPatch(typeof(ArenaSpawner), "Start", MethodType.Normal)]
         static void Prefix(ArenaSpawner __instance)
         {
-            if (FPStage.stageNameString == "Training" && (FPSaveManager.currentArenaChallenge == 5 || FPSaveManager.currentArenaChallenge == 6)) FPAudio.StopMusic();
+            if (FPStage.stageNameString == "Training" && (FPSaveManager.currentArenaChallenge == 36 || FPSaveManager.currentArenaChallenge == 6)) FPAudio.StopMusic();
             if (FPStage.stageNameString == "Training" && Plugin.spadeObject == null)
             {
                 UnityEngine.Object[] modKuboPre = Plugin.moddedBundle.LoadAllAssets();
@@ -55,7 +55,7 @@ namespace FightSpade
                     }
                 }
 
-                if (Plugin.spadeObject != null && (FPSaveManager.currentArenaChallenge == 5 || FPSaveManager.currentArenaChallenge == 6))
+                if (Plugin.spadeObject != null && (FPSaveManager.currentArenaChallenge == 36 || FPSaveManager.currentArenaChallenge == 6))
                 {
                     __instance.syncChallengeID = false;
                     Plugin.FightStarted = false;
